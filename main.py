@@ -47,8 +47,9 @@ virus = Virus()
 cenario = Cenario()
 cenario.criaWalls()
 #################apenas um teste, colocar uma lista de walls no cenario, mudar desenha do cenario para desenhar walls tbm###
-
-
+#testanto git
+#1234#
+v = 10
 ###########################################################################################################################
 
 while True:
