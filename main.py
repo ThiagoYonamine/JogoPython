@@ -4,6 +4,7 @@ from Virus import Virus
 class Wall():
     #Declara atributos da classe
     def __init__ (self,vel):
+        self.tipo = 'wall'
         self.y = 400
         self.x = random.randint(500, 1500)
         self.velocidade = vel
@@ -20,6 +21,7 @@ class Wall():
 class Moedas():
     #Declara atributos da classe
     def __init__ (self,vel):
+        self.tipo = 'moeda'
         self.y = random.randint(230, 350)
         self.x = random.randint(500, 1500)
         self.velocidade = vel
@@ -28,7 +30,33 @@ class Moedas():
         self.col = pygame.Rect(self.x, self.y, 40, 60)  ##arrumar o tamanho certo
 
     def desenha(self):
+
         self.x -= self.velocidade
+        #self.y += random.randint(-3, 3) #moeda treme
+
+        self.col = pygame.Rect(self.x, self.y, 40, 60)##arrumar o tamanho certo
+        display.blit(self.img, (self.x, self.y))
+
+class Antivirus():
+    #Declara atributos da classe
+    def __init__ (self,vel):
+        self.tipo = 'antivirus'
+        self.y = random.randint(230, 350)
+        self.x = random.randint(500, 2000)
+        self.velocidade = vel
+        self.altura = 2
+        self.img = pygame.image.load('wall.png')
+
+        self.col = pygame.Rect(self.x, self.y, 40, 60)  ##arrumar o tamanho certo
+
+    def desenha(self):
+        if(self.y > 350):
+            self.altura *=-1
+        elif(self.y < 200):
+            self.altura *=-1
+        self.x -= self.velocidade
+        #self.y += random.randint(-3, 3) #moeda treme
+        self.y += self.altura
         self.col = pygame.Rect(self.x, self.y, 40, 60)##arrumar o tamanho certo
         display.blit(self.img, (self.x, self.y))
 
@@ -43,6 +71,7 @@ class Cenario():
         self.img = pygame.image.load('background.png')
         self.listWalls = []
         self.listMoedas = []
+        self.listAntivirus = []
 
     def desenha(self):
         ##background
@@ -59,6 +88,10 @@ class Cenario():
         for i in range(len(cenario.listMoedas)):
             self.listMoedas[i].desenha()
 
+        ###antivirus
+        for i in range(len(cenario.listAntivirus)):
+            self.listAntivirus[i].desenha()
+
     ##nao sei se esse é o melhor lugar para isso
     def update(self):
         w = 0
@@ -66,12 +99,24 @@ class Cenario():
             ##wall sai do mapa
             if (self.listWalls[w].x < -20):
                 self.listWalls.remove(self.listWalls[w])
+            w += 1
 
+        w = 0
+        while (w < len(self.listMoedas)):
              ##moeda sai do mapa
             if (self.listMoedas[w].x < -20):
                 self.listMoedas.remove(self.listMoedas[w])
-
             w += 1
+
+        w = 0
+        while (w < len(self.listAntivirus)):
+            ##antivirus sai do mapa
+            if (self.listAntivirus[w].x < -20):
+                self.listAntivirus.remove(self.listAntivirus[w])
+            w += 1
+
+
+
 
         ##coloca + wall, deixa sempre com 2, substituir por num_wall
         if (len(self.listWalls) < 2):
@@ -79,14 +124,9 @@ class Cenario():
         ##coloca + wall, deixa sempre com 2, substituir por num_wall
         if (len(self.listMoedas) < 5):
             self.listMoedas.append(Moedas(self.velocidade))
-
-    def checkColisao(self,virus):
-        w = 0
-        while (w < len(self.listWalls)):
-            if ((virus.col.colliderect(self.listWalls[w].col))):
-                self.listWalls.remove(self.listWalls[w])
-
-            w += 1
+        ##coloca + wall, deixa sempre com 2, substituir por num_wall
+        if (len(self.listAntivirus) < 2):
+            self.listAntivirus.append(Antivirus(self.velocidade))
 
     def criaWalls(self):
         for i in range(2):
@@ -96,6 +136,29 @@ class Cenario():
         for i in range(5):
             self.listMoedas.append(Moedas(cenario.velocidade))
 
+    def criaAntivirus(self):
+        for i in range(2):
+            self.listAntivirus.append(Antivirus(cenario.velocidade))
+
+##alguns metodos sei la de quem
+def checkColisao(obj, virus):
+    w = 0
+    while (w < len(obj)):
+        if ((virus.col.colliderect(obj[w].col))):
+
+            if(obj[w].tipo == 'wall'):
+                virus.vida -= 1
+
+            if(obj[w].tipo == 'antivirus'):
+                if (obj[w].y >= virus.y + 20 or virus.velPulo > 0):
+                    virus.velPulo = -20
+                    virus.dinheiro += 5
+                else:
+                    virus.vida -= 1
+            if(obj[w].tipo == 'moeda'):
+                virus.dinheiro += 1
+            obj.remove(obj[w])
+        w += 1
 
 pygame.init()
 pygame.font.init()
@@ -107,6 +170,7 @@ virus = Virus()
 cenario = Cenario()
 cenario.criaWalls()
 cenario.criaMoedas()
+cenario.criaAntivirus()
 #################apenas um teste, colocar uma lista de walls no cenario, mudar desenha do cenario para desenhar walls tbm###
 #git
 ###########################################################################################################################
@@ -118,14 +182,9 @@ while True:
 
     cenario.desenha()
     cenario.update()
-    cenario.checkColisao(virus)
-
-    #####################colocar no desenha do cenario########################3
-
-    ################achar um lugar pra iss0 -_-##############################
-
-    ################################################
-
+    checkColisao(cenario.listWalls,virus)
+    checkColisao(cenario.listMoedas,virus)
+    checkColisao(cenario.listAntivirus,virus)
     virus.desenha(display)
     virus.pula()
     pygame.display.update()
