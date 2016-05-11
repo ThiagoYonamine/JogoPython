@@ -4,9 +4,11 @@ class Virus():
     #Declara atributos da classe
     def __init__ (self):
         self.vida = 1
+        self.dinheiro = 0
         self.y = 400
         self.x = 200
         self.velPulo = 0
+        self.puloDuplo = 1
         self.img = pygame.image.load('virus.png')
         self.col = pygame.Rect(self.x,self.y,60,60)
         self.fonte = pygame.font.Font("Eastwood.ttf", 40)
@@ -18,7 +20,9 @@ class Virus():
         #display.blit(pygame.transform.rotate(self.img, self.velPulo/2), (self.x, self.y))
         display.blit(self.img, (self.x, self.y))
         vidas = self.fonte.render(str(self.vida), 1, (80, 80, 50))
+        dinheiros = self.fonte.render(str(self.dinheiro), 1, (80, 80, 50))
         display.blit(vidas, (50, 25))
+        display.blit(dinheiros, (150, 25))
 
     def pula(self):
 
@@ -29,14 +33,18 @@ class Virus():
                 self.velPulo += 0.1
                 ##OUU correção do "bug" self.velPulo = 0 e tirar and
             elif keys[pygame.K_DOWN]:
-                self.velPulo += 6
+                self.velPulo += 5
+            elif keys[pygame.K_RIGHT]and self.puloDuplo >0:
+                self.velPulo = -25
+                self.puloDuplo = 0
             else:
                 self.velPulo += 2
 
         if (self.y >= 400):  # chao
             self.velPulo = 0
             self.y = 400
+            self.puloDuplo = 1
 
-        if keys[pygame.K_UP]:
+        if keys[pygame.K_UP ]:
             if (self.y >= 400):
                 self.velPulo = -25
