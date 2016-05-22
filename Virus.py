@@ -4,6 +4,7 @@ class Virus():
     #Declara atributos da classe
     def __init__ (self):
         self.vida = 1
+        self.vidaBase = 1
         self.dinheiro = 0
         self.y = 400
         self.x = 200
