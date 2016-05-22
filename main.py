@@ -1,6 +1,7 @@
 import pygame, sys, random,glob
 from Virus import Virus
-
+from Menu import Menu
+from Upgrade import Upgrade
 class Wall():
     #Declara atributos da classe
     def __init__ (self,vel):
@@ -30,12 +31,14 @@ class Moedas():
         self.col = pygame.Rect(self.x, self.y, 40, 60)  ##arrumar o tamanho certo
 
     def desenha(self):
-
         self.x -= self.velocidade
         #self.y += random.randint(-3, 3) #moeda treme
 
-        self.col = pygame.Rect(self.x, self.y, 40, 60)##arrumar o tamanho certo
+        self.col = pygame.Rect(self.x, self.y, 40, 40)##arrumar o tamanho certo
+        pygame.draw.rect(display, (0, 255, 0), self.col)  ## colisão
         display.blit(self.img, (self.x, self.y))
+
+
 
 class Antivirus():
     #Declara atributos da classe
@@ -58,6 +61,7 @@ class Antivirus():
         #self.y += random.randint(-3, 3) #moeda treme
         self.y += self.altura
         self.col = pygame.Rect(self.x, self.y, 40, 60)##arrumar o tamanho certo
+        pygame.draw.rect(display, (0, 255, 0), self.col)  ## colisão
         display.blit(self.img, (self.x, self.y))
 
 ####se pa herança
@@ -159,13 +163,42 @@ def checkColisao(obj, virus):
                 virus.dinheiro += 1
             obj.remove(obj[w])
         w += 1
+##criar em um novo arquivo tudo
+def jogo():
+    cenario.desenha()
+    cenario.update()
+    checkColisao(cenario.listWalls, virus)
+    checkColisao(cenario.listMoedas, virus)
+    checkColisao(cenario.listAntivirus, virus)
+    virus.desenha(display)
+    virus.pula()
+    if(virus.vida <= 0):
+        menu.pag = 0
 
+def chamaMenu():
+    MousePos = pygame.mouse.get_pos()
+    menu.desenha(display)
+    if pygame.mouse.get_pressed() == (1, 0, 0) and menu.start.collidepoint(MousePos):
+        menu.pag = 1 ## colocar um set, n criei rsrs
+        virus.vida = virus.vidaBase
+    if pygame.mouse.get_pressed() == (1, 0, 0) and menu.upgrade.collidepoint(MousePos):
+        menu.pag = 2  ## colocar um set, n criei rsrs
+
+def chamaUpgrade():
+    MousePos = pygame.mouse.get_pos()
+    upgrade.desenha(display)
+    if pygame.mouse.get_pressed() == (1, 0, 0) and upgrade.menu.collidepoint(MousePos):
+        menu.pag = 0  ## colocar um set, n criei rsrs
+    if pygame.mouse.g == (1, 0, 0) and upgrade.vidaBtn.collidepoint(MousePos):
+        virus.vidaBase +=1
 pygame.init()
 pygame.font.init()
 mainClock = pygame.time.Clock()
 display = pygame.display.set_mode((500,600)) ## mudar de acordo com a img certa. ps 1ª ser +- 1/3 da img
 pygame.display.set_caption('Jogo')
 
+menu = Menu()
+upgrade = Upgrade()
 virus = Virus()
 cenario = Cenario()
 cenario.criaWalls()
@@ -179,13 +212,11 @@ while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
-
-    cenario.desenha()
-    cenario.update()
-    checkColisao(cenario.listWalls,virus)
-    checkColisao(cenario.listMoedas,virus)
-    checkColisao(cenario.listAntivirus,virus)
-    virus.desenha(display)
-    virus.pula()
+    if(menu.pag == 0):
+        chamaMenu()
+    elif(menu.pag == 1):
+        jogo()
+    else:
+        chamaUpgrade()
     pygame.display.update()
     mainClock.tick(40)
