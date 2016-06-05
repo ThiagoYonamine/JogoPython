@@ -16,7 +16,7 @@ class Moedas():
         #self.y += random.randint(-3, 3) #moeda treme
 
         self.col = pygame.Rect(self.x, self.y, 40, 40)##arrumar o tamanho certo
-        #pygame.draw.rect(display, (0, 255, 0), self.col)  ## colisão
+        #pygame.draw.rect(display, (0, 255, 0), self.col)  ## colisao
         display.blit(self.img[int(self.anima)], (self.x, self.y))
 
         self.anima +=0.2

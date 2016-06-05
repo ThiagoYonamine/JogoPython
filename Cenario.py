@@ -1,10 +1,10 @@
 import pygame, sys, random,glob
-from Virus import Virus
-from Menu import Menu
-from Upgrade import Upgrade
+
 from Moedas import Moedas
 from Wall import Wall
 from Antivirus import Antivirus
+from Avast import Avast
+
 class Cenario():
     #Declara atributos da classe
     def __init__ (self):
@@ -16,20 +16,22 @@ class Cenario():
 
         self.numWall = 1
         self.numAntivirus = 0
+        self.numAvast = 0
         self.img = pygame.image.load('background.jpg')
         self.floor = pygame.image.load('Floor.png')
-        self.imgRed = pygame.image.load('Untitled-1.png')
+        self.imgRed = pygame.image.load('Untitled-1.png').convert_alpha()
         self.listWalls = []
         self.listMoedas = []
         self.listAntivirus = []
+        self.listAvast = []
 
     def desenha(self,display):
         ##background
         self.x -= self.velocidade
 
         display.blit(self.img, (self.x, self.y))
-
-        if(self.x <= 800-2753): # recomeça o background
+        ##recomeca o background
+        if(self.x <= 800-2753): 
             self.x=0
 
         ###walls
@@ -44,9 +46,14 @@ class Cenario():
         for i in range(len(self.listAntivirus)):
             self.listAntivirus[i].desenha(display,self.velocidade)
 
+        ###avast
+        for i in range(len(self.listAvast)):
+            self.listAvast[i].desenha(display, self.velocidade)
+
     def desenhaFloor(self, display):
         display.blit(self.floor, (self.x, 527))
 
+    def desenhaDano(self, display):
         display.blit(self.imgRed, (0, 0))
 
 
@@ -72,6 +79,12 @@ class Cenario():
                 self.listAntivirus.remove(self.listAntivirus[w])
             w += 1
 
+        while (w < len(self.listAvast)):
+            ##antivirus sai do mapa
+            if (self.listAvast[w].x < -60):
+                self.listAvast.remove(self.listAvast[w])
+            w += 1
+
 
 
         if (len(self.listWalls) < self.numWall):
@@ -83,8 +96,11 @@ class Cenario():
         if (len(self.listAntivirus) < self.numAntivirus):
             self.listAntivirus.append(Antivirus())
 
+        if (len(self.listAvast) < self.numAvast):
+            self.listAvast.append(Avast())
+
     def criaWalls(self):
-        for i in range(2):
+        for i in range(self.numWall):
             self.listWalls.append(Wall())
 
     def criaMoedas(self):
@@ -92,8 +108,12 @@ class Cenario():
            self.listMoedas.append(Moedas())
 
     def criaAntivirus(self):
-        for i in range(2):
+        for i in range(self.numAntivirus):
             self.listAntivirus.append(Antivirus())
+
+    def criaAvast(self):
+        for i in range(self.numAvast):
+            self.listAvast.append(Avast())
 
     def controler(self):
         self.controle += 0.1
@@ -109,6 +129,8 @@ class Cenario():
             if(self.nivel%2 ==0):
                 self.numAntivirus += 1
                 self.numWall += 1
+            if(self.nivel%3==0):
+                self.numAvast +=1
 
 
 
@@ -141,4 +163,11 @@ class Cenario():
             ##antivirus sai do mapa
 
             self.listAntivirus.remove(self.listAntivirus[w])
+            w += 1
+
+        w = 0
+        while (w < len(self.listAvast)):
+            ##antivirus sai do mapa
+
+            self.listAvast.remove(self.listAvast[w])
             w += 1

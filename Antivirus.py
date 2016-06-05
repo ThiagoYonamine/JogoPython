@@ -21,5 +21,5 @@ class Antivirus():
         #self.y += random.randint(-3, 3) #moeda treme
         self.y += self.altura
         self.col = pygame.Rect(self.x, self.y, 60, 70)##arrumar o tamanho certo
-        #pygame.draw.rect(display, (0, 255, 0), self.col)  ## colisão
+        #pygame.draw.rect(display, (0, 255, 0), self.col)  ## colisao
         display.blit(self.img, (self.x, self.y))
