@@ -55,11 +55,15 @@ def jogo():
     cenario.controler()
 
     if(virus.vida <= 0):
+        if(virus.Hscore < virus.score):
+            virus.Hscore = virus.score
         menu.pag = 0
 
 def chamaMenu():
     MousePos = pygame.mouse.get_pos()
     menu.desenha(display)
+    scoref = virus.fonte.render(str(int(virus.Hscore)), 1, (0, 0, 0))
+    display.blit(scoref, (580, 20))
     if pygame.mouse.get_pressed() == (1, 0, 0) and menu.start.collidepoint(MousePos):
         virus.vida = virus.vidaBase
         virus.score = 0
@@ -74,12 +78,13 @@ def chamaMenu():
 def chamaUpgrade():
     MousePos = pygame.mouse.get_pos()
     upgrade.desenha(display,virus)
+    #upgrade.precoVida = 3 * virus.vidaBase
     if pygame.mouse.get_pressed() == (1, 0, 0) and upgrade.menuBtn.collidepoint(MousePos):
         menu.pag = 0
     if pygame.mouse.get_pressed() == (1, 0, 0) and upgrade.vidaBtn.collidepoint(MousePos) and virus.dinheiro >= upgrade.precoVida:
         virus.vidaBase +=1
         virus.dinheiro -= upgrade.precoVida
-        upgrade.precoVida *= 1.4
+        upgrade.precoVida = 3 * virus.vidaBase
         upgrade.precoVida = int(upgrade.precoVida)
     if pygame.mouse.get_pressed() == (1, 0, 0) and upgrade.planarBtn.collidepoint(MousePos) and virus.dinheiro >= upgrade.precoPlanar and not virus.unlockPlanar:
         virus.unlockPlanar = True
@@ -106,10 +111,13 @@ cenario.criaMoedas()
 cenario.criaAntivirus()
 cenario.criaAvast()
 
+pygame.mixer.music.load("MusicaJogo.mp3")
+pygame.mixer.music.play(loops=-1)
 
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            virus.salvaBD()
             exit()
 
     if(menu.pag == 0):

@@ -1,12 +1,18 @@
 import pygame, sys, random,glob
-
+import sqlite3
+from  useBD import UseBd
+BD= UseBd()
+BD.create()
+BD.imprime()
 class Virus():
     #Declara atributos da classe
     def __init__ (self):
+
         self.score = 0
+        self.Hscore = BD.selectScore()
         self.vida = 1
-        self.vidaBase = 1
-        self.dinheiro = 2500
+        self.vidaBase = BD.selectVida()
+        self.dinheiro = 5000#BD.selectDinheiro()
         self.y = 500
         self.x = 200
         self.velPulo = 0
@@ -28,11 +34,16 @@ class Virus():
         self.estado = "correndo" ## "pulando" ## "planando"
         self.col = pygame.Rect(self.x,self.y,60,60)
         self.fonte = pygame.font.Font("Eastwood.ttf", 30)
-        self.unlockPlanar = False
-        self.unlockPuloDuplo = False
-        self.unlockSuperPeso = False
+        self.unlockPlanar = BD.selectUnlockPlanar()
+        self.unlockPuloDuplo = BD.selectUnlockPuloDuplo()
+        self.unlockSuperPeso = BD.selectUnlockSuperPeso()
 
-        # desenhar jogador
+
+    # desenhar jogador
+    def salvaBD(self):
+        print("save")
+        BD.update(self)
+        #BD.imprime()
     def desenha(self,display):
         self.col = pygame.Rect(self.x, self.y, 76, 76)
         self.score += 0.1
