@@ -12,7 +12,7 @@ class Virus():
         self.Hscore = BD.selectScore()
         self.vida = 1
         self.vidaBase = BD.selectVida()
-        self.dinheiro = 5000#BD.selectDinheiro()
+        self.dinheiro = BD.selectDinheiro()
         self.y = 500
         self.x = 200
         self.velPulo = 0

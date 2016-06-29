@@ -119,7 +119,7 @@ class Cenario():
         self.controle += 0.1
 
 
-        if(self.controle >= self.nivel*25 ):
+        if(self.controle >= self.nivel*20 ):
 
             self.nivel += 1
             ##print(self.nivel)
@@ -130,7 +130,7 @@ class Cenario():
                 self.numAntivirus += 1
                 self.numWall += 1
             if(self.nivel%3==0):
-                self.numAvast +=1
+                self.numAvast +=2
 
 
 
@@ -143,6 +143,7 @@ class Cenario():
         self.velocidade = 6
         self.numWall = 1
         self.numAntivirus = 0
+        self.numAvast = 0
 
         w = 0
         while (w < len(self.listWalls)):

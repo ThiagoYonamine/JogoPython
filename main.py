@@ -3,7 +3,8 @@ from Virus import Virus
 from Menu import Menu
 from Upgrade import Upgrade
 from Cenario import Cenario
-
+from sons import Sons
+from Tutorial import Tutorial
 ##alguns metodos sei la de quem
 def checkColisao(obj, virus):
     w = 0
@@ -12,6 +13,7 @@ def checkColisao(obj, virus):
 
             if(obj[w].tipo == 'wall'):
                 virus.vida -= 1
+                musica.danoSound()
                 cenario.desenhaDano(display)
 
             if(obj[w].tipo == 'antivirus'):
@@ -23,6 +25,7 @@ def checkColisao(obj, virus):
                     virus.controlEfeito2 = True
                 else:
                     virus.vida -= 1
+                    musica.danoSound()
                     cenario.desenhaDano(display)
 
             if(obj[w].tipo == 'avast'):
@@ -34,9 +37,12 @@ def checkColisao(obj, virus):
                     virus.controlEfeito2 = True
                 else:
                     virus.vida -= 1
+                    musica.danoSound()
                     cenario.desenhaDano(display)
 
             if(obj[w].tipo == 'moeda'):
+                musica.coinSound()
+
                 virus.dinheiro += 1
             obj.remove(obj[w])
         w += 1
@@ -72,13 +78,15 @@ def chamaMenu():
     if pygame.mouse.get_pressed() == (1, 0, 0) and menu.upgrade.collidepoint(MousePos):
         menu.pag = 2
         pygame.mouse.set_pos(400,420)
+    if pygame.mouse.get_pressed() == (1, 0, 0) and menu.tutorial.collidepoint(MousePos):
+        menu.pag = 3
 
 
 
 def chamaUpgrade():
     MousePos = pygame.mouse.get_pos()
     upgrade.desenha(display,virus)
-    #upgrade.precoVida = 3 * virus.vidaBase
+    upgrade.precoVida =  virus.vidaBase * virus.vidaBase
     if pygame.mouse.get_pressed() == (1, 0, 0) and upgrade.menuBtn.collidepoint(MousePos):
         menu.pag = 0
     if pygame.mouse.get_pressed() == (1, 0, 0) and upgrade.vidaBtn.collidepoint(MousePos) and virus.dinheiro >= upgrade.precoVida:
@@ -96,6 +104,9 @@ def chamaUpgrade():
         virus.unlockSuperPeso = True
         virus.dinheiro -= upgrade.precoSuperPeso
 
+def chamaTutorial():
+    tutotial.desenha(display,menu)
+
 pygame.init()
 pygame.font.init()
 mainClock = pygame.time.Clock()
@@ -104,6 +115,7 @@ pygame.display.set_caption('Jogo')
 
 menu = Menu()
 upgrade = Upgrade()
+tutotial = Tutorial()
 virus = Virus()
 cenario = Cenario()
 cenario.criaWalls()
@@ -111,8 +123,8 @@ cenario.criaMoedas()
 cenario.criaAntivirus()
 cenario.criaAvast()
 
-pygame.mixer.music.load("MusicaJogo.mp3")
-pygame.mixer.music.play(loops=-1)
+musica = Sons()
+musica.playBack()
 
 while True:
     for event in pygame.event.get():
@@ -124,7 +136,9 @@ while True:
         chamaMenu()
     elif(menu.pag == 1):
         jogo()
-    else:
+    elif(menu.pag == 2):
         chamaUpgrade()
+    elif(menu.pag ==3):
+        chamaTutorial()
     pygame.display.update()
     mainClock.tick(40)
